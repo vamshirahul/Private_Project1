@@ -1,15 +1,23 @@
+import io, zipfile
 import streamlit as st
 import pandas as pd
-from utils.helpers import parse_csv_upload, df_to_download_bytes
+from utils.helpers import parse_csv_upload, df_to_download_bytes, new_job_id, save_artifact, record_dataset
 
 EXAMPLE_HELP = """Upload two CSVs (Buyer & Target) with cost data.
-Required columns (flexible names allowed, just map them below):
+Required columns (flexible names allowed; just map them below):
 - cost_center / gl_account / amount / currency / system
 """
 
+def make_export_zip(files: dict[str, bytes]) -> bytes:
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, data in files.items():
+            z.writestr(name, data)
+    return buf.getvalue()
+
 def render():
     st.header("💸 Cost Merge Tool")
-    st.write("Normalize and merge Buyer/Target cost data to see a combined view and spot quick-win synergies.")
+    st.caption("Normalize Buyer/Target cost data → merged summary & synergy hints.")
     st.info(EXAMPLE_HELP)
 
     col1, col2 = st.columns(2)
@@ -43,21 +51,62 @@ def render():
 
         merged = pd.concat([buyer, target], ignore_index=True)
 
-        # Simple pivot to summarize
+        # Summary pivot
         summary = (
             merged
             .groupby(["_system", "_gl", "_source"], dropna=False)["_amount"]
             .sum().reset_index()
             .rename(columns={"_system":"system","_gl":"gl_account","_source":"source","_amount":"amount"})
+            .sort_values(["system","gl_account","source"])
         )
 
-        st.success("✅ Merged")
+        # KPI row
+        r1, r2, r3 = st.columns(3)
+        with r1: st.markdown(f'<div class="kpi">📄 Buyer rows<br><b>{len(buyer):,}</b></div>', unsafe_allow_html=True)
+        with r2: st.markdown(f'<div class="kpi">📄 Target rows<br><b>{len(target):,}</b></div>', unsafe_allow_html=True)
+        with r3: st.markdown(f'<div class="kpi">🔗 Unique systems<br><b>{summary["system"].nunique()}</b></div>', unsafe_allow_html=True)
+
+        # Output card
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("#### ✅ Merged Summary")
         st.dataframe(summary, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        st.download_button(
-            "⬇️ Download merged summary (.csv)",
-            data=df_to_download_bytes(summary),
-            file_name="cost_merge_summary.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
+        # Downloads
+        csv_bytes = df_to_download_bytes(summary)
+        st.download_button("⬇️ Download merged summary (.csv)",
+                           data=csv_bytes, file_name="cost_merge_summary.csv",
+                           mime="text/csv", use_container_width=True)
+
+        # Export pack
+        export_zip = make_export_zip({
+            "cost_merge_summary.csv": csv_bytes,
+            "mapping.json": str({
+                "cost_center": map_cost_center,
+                "gl_account": map_gl,
+                "amount": map_amount,
+                "system": map_system
+            }).encode("utf-8")
+        })
+        st.download_button("📦 Download Export Pack (.zip)", data=export_zip,
+                           file_name="cost_merge_pack.zip", mime="application/zip", use_container_width=True)
+
+        # Artifacts + dataset
+        job_id = new_job_id("cost_merge")
+        path_csv = save_artifact(job_id, "cost_merge_summary.csv", csv_bytes)
+        if st.session_state.get("capture_outputs", False):
+            record_dataset(
+                module="cost_merge",
+                job_id=job_id,
+                inputs={
+                    "buyer_filename": getattr(f1, "name", "buyer.csv"),
+                    "target_filename": getattr(f2, "name", "target.csv"),
+                    "map_cost_center": map_cost_center,
+                    "map_gl": map_gl,
+                    "map_amount": map_amount,
+                    "map_system": map_system,
+                },
+                output_text=summary.to_csv(index=False),
+                artifacts={"summary_csv": path_csv},
+                quality="unreviewed"
+            )
