@@ -1,0 +1,11 @@
+Company,Application,Category,Deployment,Owner
+AlphaCorp,JD Edwards,ERP,On-Prem,IT
+AlphaCorp,Workday,HCM,Cloud,HR
+AlphaCorp,Salesforce,CRM,Cloud,Sales
+BetaInc,SAP S/4HANA,ERP,On-Prem,IT
+BetaInc,SuccessFactors,HCM,Cloud,HR
+BetaInc,HubSpot,CRM,Cloud,Marketing
+BetaInc,QuickBooks,Finance,On-Prem,Finance
+BetaInc,JD Edwards,ERP,On-Prem,IT
+AlphaCorp,Tableau,BI,Cloud,Analytics
+AlphaCorp,Salesforce,CRM,Cloud,Sales
