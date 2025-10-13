@@ -13,6 +13,38 @@ from utils.helpers import (
     text_to_bytes,
 )
 
+from dataclasses import dataclass, field
+
+@dataclass
+class CheckItem:
+    name: str
+    passed: bool
+    details: str = ""
+
+@dataclass
+class ProgressTracker:
+    checks: list[CheckItem] = field(default_factory=list)
+
+    def add(self, name: str, passed: bool, details: str = ""):
+        self.checks.append(CheckItem(name, bool(passed), details))
+
+    @property
+    def total(self) -> int:
+        return len(self.checks)
+
+    @property
+    def passed_count(self) -> int:
+        return sum(1 for c in self.checks if c.passed)
+
+    @property
+    def ratio(self) -> float:
+        return (self.passed_count / self.total) if self.total else 0.0
+
+    def to_dataframe(self):
+        import pandas as pd
+        return pd.DataFrame([{"Check": c.name, "Passed": "✅" if c.passed else "❌", "Details": c.details} for c in self.checks])
+
+
 # ---------------------------
 # Helpers: new feature blocks
 # ---------------------------
@@ -197,6 +229,22 @@ def render():
     # Parse CSV using your existing helper (unchanged behavior)
     df = parse_csv_upload(f)
 
+    tracker = ProgressTracker()
+
+    # Put a progress bar right away
+    progress_slot = st.empty()
+    progress_text = st.empty()
+    def _render_progress():
+        progress_slot.progress(tracker.ratio, text=f"Checks passed: {tracker.passed_count}/{tracker.total}")
+        progress_text.caption(f"Pass rate: **{int(tracker.ratio*100)}%**")
+
+    # First basic checks
+    tracker.add("File uploaded", True, getattr(f, "name", "source.csv"))
+    tracker.add("Rows present", len(df) > 0, f"{len(df)} rows")
+    tracker.add("Columns present", len(df.columns) > 0, f"{len(df.columns)} columns")
+    _render_progress()
+
+
     # KPI strip
     k1, k2, k3 = st.columns(3)
     with k1:
@@ -209,6 +257,11 @@ def render():
     # Profile + original readiness score (kept)
     profile = simple_profile(df)
     score = readiness_score_from_profile(profile)
+
+    tracker.add("Profile generated", True, "simple_profile ok")
+    tracker.add("Readiness score computed", isinstance(score, (int, float)), f"{score}/100")
+    _render_progress()
+
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.subheader("✅ Readiness Result")
