@@ -285,7 +285,7 @@ def render():
 
     # ----------------------------
     # New: Optional analysis block
-    # ----------------------------
+    # -----------------------------
     st.divider()
     st.subheader("🔧 Optional Analysis")
 
