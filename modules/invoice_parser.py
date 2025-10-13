@@ -8,7 +8,7 @@ def render():
     st.write("Extract structured fields from invoice text. (Starter version: paste text or OCR output.)")
 
     txt = st.text_area("Paste invoice text here (or copy OCR output)", height=220)
-    if st.button("Extract JSON", use_container_width=True, disabled=not txt.strip()):
+    if st.button("Extract JSON", width='stretch', disabled=not txt.strip()):
         if not st.secrets.get("OPENAI_API_KEY"):
             st.error("Missing OPENAI_API_KEY in .streamlit/secrets.toml")
             return
@@ -34,7 +34,7 @@ def render():
                 data=json.dumps(data, indent=2),
                 file_name="invoice.json",
                 mime="application/json",
-                use_container_width=True
+                width='stretch'
             )
         except Exception:
             st.error("Model did not return valid JSON. Try again or adjust the text.")

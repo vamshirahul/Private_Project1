@@ -172,7 +172,7 @@ LOGO_PATH = APP_ROOT / "assets" / "Logo_Image.png"
 
 if LOGO_PATH.exists():
     # ✅ Your actual company logo
-    st.sidebar.image(str(LOGO_PATH), use_container_width=True)
+    st.sidebar.image(str(LOGO_PATH), width='stretch')
 else:
     # ✅ Fallback SVG if logo file not found
     st.sidebar.markdown(
@@ -199,7 +199,7 @@ module = st.sidebar.radio(
     (
         "Home (Launch)",               # ← NEW
         "Integration Playbook Generator",
-        "Cost Merge Tool",
+        "Cost Synergy Estimator",
         "Data Migration Readiness Checker",
         "Invoice Parser",
         "AI M&A Assistant",
@@ -432,7 +432,7 @@ elif module == "Integration Playbook Generator":
     reset_default_bg()
     playbook_generator.render()
 
-elif module == "Cost Merge Tool":
+elif module == "Cost Synergy Estimator":
     reset_default_bg()
     cost_merge_tool.render()
 

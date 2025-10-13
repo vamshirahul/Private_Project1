@@ -1,2 +1,5 @@
 /venv
 .streamlit/
+__pycache__/
+*.pyc
+*.__pycache__/

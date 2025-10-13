@@ -139,13 +139,13 @@ def render():
             # Exports
             md_bytes = text_to_bytes(md)
             st.download_button("⬇️ Download Playbook (.md)", data=md_bytes,
-                               file_name="integration_playbook.md", mime="text/markdown", use_container_width=True)
+                               file_name="integration_playbook.md", mime="text/markdown", width='stretch')
 
             docx_bytes = md_to_docx_bytes(md, title=f"{company_name} - Integration Playbook")
             st.download_button("📄 Download DOCX", data=docx_bytes,
                                file_name="integration_playbook.docx",
                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                               use_container_width=True)
+                               width='stretch')
 
             export_zip = make_export_zip({
                 "playbook.md": md_bytes,
@@ -154,7 +154,7 @@ def render():
             })
             st.download_button("📦 Download Export Pack (.zip)", data=export_zip,
                                file_name="integration_export_pack.zip", mime="application/zip",
-                               use_container_width=True)
+                               width='stretch')
 
             # Artifacts + dataset
             path_md = save_artifact(job_id, "integration_playbook.md", md_bytes)
@@ -266,13 +266,13 @@ def render():
             # Exports
             md_bytes = text_to_bytes(final_md)
             st.download_button("⬇️ Download Detailed Playbook (.md)", data=md_bytes,
-                               file_name="integration_playbook_detailed.md", mime="text/markdown", use_container_width=True)
+                               file_name="integration_playbook_detailed.md", mime="text/markdown", width='stretch')
 
             docx_bytes = md_to_docx_bytes(final_md, title=f"{company_name_a} - Integration Playbook (Detailed)")
             st.download_button("📄 Download DOCX", data=docx_bytes,
                                file_name="integration_playbook_detailed.docx",
                                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                               use_container_width=True)
+                               width='stretch')
 
             export_zip = make_export_zip({
                 "playbook_detailed.md": md_bytes,
@@ -280,7 +280,7 @@ def render():
                 "toc.txt": text_to_bytes("\n".join(apps)),
             })
             st.download_button("📦 Download Export Pack (.zip)", data=export_zip,
-                               file_name="integration_export_pack.zip", mime="application/zip", use_container_width=True)
+                               file_name="integration_export_pack.zip", mime="application/zip", width='stretch')
 
             # Artifacts + dataset
             path_md = save_artifact(job_id, "integration_playbook_detailed.md", md_bytes)

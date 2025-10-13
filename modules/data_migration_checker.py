@@ -35,7 +35,7 @@ def render():
     st.subheader("✅ Readiness Result")
     st.metric("Readiness Score", f"{score}/100")
     st.subheader("Data Profile")
-    st.dataframe(profile, use_container_width=True)
+    st.dataframe(profile, width='stretch')
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Quick readout
@@ -53,7 +53,7 @@ def render():
     # Downloads
     prof_csv = df_to_download_bytes(profile)
     st.download_button("⬇️ Download profile (.csv)", data=prof_csv,
-                       file_name="readiness_profile.csv", mime="text/csv", use_container_width=True)
+                       file_name="readiness_profile.csv", mime="text/csv", width='stretch')
 
     readout_bytes = text_to_bytes(readout)
     export_zip = make_export_zip({
@@ -61,7 +61,7 @@ def render():
         "readout.txt": readout_bytes
     })
     st.download_button("📦 Download Export Pack (.zip)", data=export_zip,
-                       file_name="readiness_pack.zip", mime="application/zip", use_container_width=True)
+                       file_name="readiness_pack.zip", mime="application/zip", width='stretch')
 
     # Artifacts + dataset
     job_id = new_job_id("readiness")

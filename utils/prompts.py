@@ -76,8 +76,20 @@ For every application, produce:
    - Suggested wave (Day-1, Day-30, Day-60, etc.)
    - Resource estimate (FTE weeks)
 
+6. **Gantt Chart**
+   - Produce a detailed Gantt chart for integration timelines for a 100 day period with all the key phases on the chart
+
 At the end, produce a **Summary Table** with columns:
 Application | Strategy | Wave | Owner | Risk Level.
+
+### 🛠️ Recommendations
+Provide actionable suggestions for each application in a bulleted format that contains:
+- Which applications to consolidate or prioritize for retirement
+- Any short-term vs long-term integration considerations
+- Other insights based on the overall portfolio
+- Which apps should be retained and migrated?
+- Which areas need further investigation before Day 1?
+- Mention any compliance, cost-efficiency, or user-experience considerations.
 
 Context:
 - Company: {company_name} ({company_size})
